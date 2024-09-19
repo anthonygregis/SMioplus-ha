@@ -5,7 +5,8 @@ import voluptuous as vol
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 import asyncio
 from datetime import timedelta
-
+from homeassistant.core import HomeAssistant
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers import config_validation as cv
 from homeassistant.const import (
 	CONF_NAME
@@ -83,7 +84,8 @@ def setup(hass, config):
     
     return True
 
-async def async_setup_entry(hass, entry, async_add_entities):
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Set up SMioplus from a config entry."""
     async def async_update_data():
         return None
 
@@ -107,3 +109,18 @@ async def async_setup_entry(hass, entry, async_add_entities):
         )
 
     return True
+
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Unload a config entry."""
+    unload_ok = all(
+        await asyncio.gather(
+            *[
+                hass.config_entries.async_forward_entry_unload(entry, platform)
+                for platform in SM_MAP
+            ]
+        )
+    )
+    if unload_ok:
+        hass.data[DOMAIN].pop(entry.entry_id)
+
+    return unload_ok

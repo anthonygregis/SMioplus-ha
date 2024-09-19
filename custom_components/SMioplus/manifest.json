@@ -1,13 +1,12 @@
 {
   "domain": "SMioplus",
-  "name": "Sequent Microsystems Home Automation Integraion",
-  "version": "1.1.0",
-  "integration_type": "device",
+  "name": "Sequent Microsystems Home Automation Integration",
+  "config_flow": true,
   "documentation": "https://github.com/anthonygregis/SMioplus-ha",
-  "issue_tracker": "https://github.com/anthonygregis/SMioplus-ha",
+  "issue_tracker": "https://github.com/anthonygregis/SMioplus-ha/issues",
   "dependencies": [],
-  "after_dependencies": [],
-  "codeownders": ["anthonygregis"],
-  "config_flow": false,
-  "requirements": ["SMioplus>=1.0.5"]
+  "codeowners": ["@anthonygregis"],
+  "requirements": ["SMioplus>=1.0.5"],
+  "iot_class": "local_polling",
+  "version": "1.1.1"
 }
