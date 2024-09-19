@@ -7,7 +7,7 @@
   "issue_tracker": "https://github.com/anthonygregis/SMioplus-ha",
   "dependencies": [],
   "after_dependencies": [],
-  "codeownders": ["3lv"],
+  "codeownders": ["anthonygregis"],
   "config_flow": false,
   "requirements": ["SMioplus>=1.0.5"]
 }
