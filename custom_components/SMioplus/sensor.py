@@ -9,6 +9,7 @@ import time
 import types
 import inspect
 from inspect import signature
+import asyncio
 
 import libioplus as SMioplus
 
@@ -16,6 +17,8 @@ from homeassistant.components.light import PLATFORM_SCHEMA
 import homeassistant.helpers.config_validation as cv
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.helpers.entity import generate_entity_id
+from homeassistant.helpers.event import async_track_time_interval
+from datetime import timedelta
 
 from . import (
         DOMAIN, CONF_STACK, CONF_TYPE, CONF_CHAN, CONF_NAME,
@@ -69,6 +72,29 @@ class Sensor(SensorEntity):
             res = self._SM.cfgOptoEdgeCount(self._stack, self._chan, 1)
             _LOGGER.error(res) # res is 1, so it SHOULD be working
         ## END
+
+        self._update_interval = 1  # 1 second update interval
+        self._remove_update_interval = None
+
+    async def async_added_to_hass(self):
+        """Set up a timer to update the sensor periodically."""
+        self._remove_update_interval = async_track_time_interval(
+            self.hass, self.async_update_ha_state, timedelta(seconds=self._update_interval)
+        )
+
+    async def async_will_remove_from_hass(self):
+        """Remove the update timer when the entity is removed."""
+        if self._remove_update_interval:
+            self._remove_update_interval()
+
+    @property
+    def should_poll(self):
+        """No polling needed."""
+        return False
+
+    async def async_update(self):
+        """Update the entity."""
+        await self.hass.async_add_executor_job(self.update)
 
     def __SM__init(self):
         com = SM_MAP[self._type]["com"]
