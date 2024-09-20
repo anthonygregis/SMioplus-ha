@@ -73,14 +73,16 @@ class Sensor(SensorEntity):
             _LOGGER.error(res) # res is 1, so it SHOULD be working
         ## END
 
-        self._update_interval = 0.1  # 1 second update interval
+        self._update_interval = 0.1  # Set to 0.1 seconds for testing
         self._remove_update_interval = None
+        _LOGGER.debug(f"Sensor {self._name} initialized with update interval: {self._update_interval}")
 
     async def async_added_to_hass(self):
         """Set up a timer to update the sensor periodically."""
         self._remove_update_interval = async_track_time_interval(
             self.hass, self.async_update_ha_state, timedelta(seconds=self._update_interval)
         )
+        _LOGGER.debug(f"Sensor {self._name} added to hass with update interval: {self._update_interval}")
 
     async def async_will_remove_from_hass(self):
         """Remove the update timer when the entity is removed."""
@@ -95,6 +97,7 @@ class Sensor(SensorEntity):
     async def async_update(self):
         """Update the entity."""
         await self.hass.async_add_executor_job(self.update)
+        _LOGGER.debug(f"Sensor {self._name} updated with value: {self._value}")
 
     def __SM__init(self):
         com = SM_MAP[self._type]["com"]
@@ -109,10 +112,8 @@ class Sensor(SensorEntity):
 
     def update(self):
         if self._type == "opto_cnt":
-            time.sleep(self._short_timeout)
             ## IT DOESN"T WORK WITHOUT THIS IDK WHY
             self._SM.cfgOptoEdgeCount(self._stack, self._chan, 1)
-        time.sleep(self._short_timeout)
         try:
             self._value = self._SM_get(self._chan)
         except Exception as ex:
