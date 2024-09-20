@@ -73,7 +73,7 @@ class Sensor(SensorEntity):
             _LOGGER.error(res) # res is 1, so it SHOULD be working
         ## END
 
-        self._update_interval = 1  # 1 second update interval
+        self._update_interval = 0.1  # 1 second update interval
         self._remove_update_interval = None
 
     async def async_added_to_hass(self):
